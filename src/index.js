@@ -1,46 +1,74 @@
 const addBtn = document.querySelector('#new-toy-btn')
 const toyForm = document.querySelector('.container')
 let addToy = false
+let toysDiv=document.querySelector("#toy-collection");
 
 // YOUR CODE HERE
 
-addBtn.addEventListener('click', () => {
-  // hide & seek with the form
-  addToy = !addToy
-  if (addToy) {
-    toyForm.style.display = 'block'
-  } else {
-    toyForm.style.display = 'none'
-  }
-})
 
+function getToys (){
+  return fetch("http://localhost:3000/toys")
+  .then(res => res.json())
+  }
 
 // OR HERE!
+function post(toy_data){
 let url="http://localhost:3000/toys";
 fetch(url,
 { headers: {
   'Content-Type':'application/json',
   'Accept': 'application/json'
 },
-method: "GET"}
-).then(resp => resp.json())
-.then(function(toys){
-  let toysDiv=document.querySelector("#toy-collection");
-  for (let toy of toys){
-    function f(id,name,image,likes){
-      this.id=id;
-      this.name=name;
-      this.image=image;
-      this.likes=likes;
-    }
-    let newDiv=document.createElement('div');
-    let elemObj=new f(toy.id,toy.name,toy.image,toy.likes);
-    newDiv.class="card";
-    console.log(elemObj);
-    newDiv.innerHTML=JSON.stringify(elemObj);
-    JSON.stringify(newDiv);
+method: "POST",
+body: JSON.stringify({
+  "name": toy_data.name.value,
+  "image": toy_data.image.value,
+  "likes": 0
 
-    console.log(newDiv);
-    toysDiv.appendChild(newDiv);
-  }
+})}
+).then(res => res.json())
+.then((obj_toy) => {
+  let new_toy = Render(obj_toy)
+  divCollect.append(new_toy)
 })
+}
+  
+  function Render(toy){
+    let h2 = document.createElement('h2')
+  h2.innerText = toy.name
+
+  let img = document.createElement('img')
+  img.setAttribute('src', toy.image)
+  img.setAttribute('class', 'toy-avatar')
+
+  let p = document.createElement('p')
+  p.innerText = `${toy.likes} likes`
+
+  let btn = document.createElement('button')
+  btn.setAttribute('class', 'like-btn')
+  btn.setAttribute('id', toy.id)
+  btn.innerText = "like"
+    let newDiv=document.createElement('div');
+    newDiv.class="card";
+    newDiv.append(name,img,p,btn);
+    toysDiv.append(newDiv);
+  }
+
+  addBtn.addEventListener('click', () => {
+    // hide & seek with the form
+    addToy = !addToy
+    if (addToy) {
+      toyForm.style.display = 'block'
+      toyForm.addEventListener('submit', event => {
+        event.preventDefault()
+        postToy(event.target)
+    })
+  } else {
+      toyForm.style.display = 'none'
+    }
+  })
+
+
+  getToys().then(toys => {
+    toys.forEach(toy => {
+      Render(toy)})})
