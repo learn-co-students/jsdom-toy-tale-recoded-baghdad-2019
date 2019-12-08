@@ -14,3 +14,18 @@ document.addEventListener("DOMContentLoaded", ()=>{
   })
 
 })
+fetch("http://localhost:3000/toys")
+  .then(function(res) {
+    return res.json();
+  })
+  .then(function(toys) {
+    let body = document.querySelector("body");
+    body.innerHTML = "";
+  let toyDiv= document.querySelector("#toy-collection");
+    for (const toy of toys) {
+      let elem = document.createElement("div");
+      elem.class="card"
+      elem.innerHTML = toy;
+      toyDiv.appendChild(elem);
+    }
+  })
