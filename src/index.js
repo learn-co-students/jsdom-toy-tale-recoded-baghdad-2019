@@ -1,11 +1,31 @@
-const addBtn = document.querySelector('#new-toy-btn')
-const toyForm = document.querySelector('.container')
 let addToy = false
 let toyCollection = document.querySelector("#toy-collection")
+
 
 function fetchToys(){
   return fetch("http://localhost:3000/toys")
     .then(res => res.json())
+}
+
+function postToy(toy_data) {
+  fetch('http://localhost:3000/toys', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        "name": toy_data.name.value,
+        "image": toy_data.image.value,
+        "likes": 0
+
+      })
+    })
+    .then(res => res.json())
+    .then((obj_toy) => {
+      let new_toy = renderToys(obj_toy)
+      divCollect.append(new_toy)
+    })
 }
 
 function likes(e){
@@ -54,15 +74,19 @@ function renderToy(toy){
   divCollect.append(divCard)
   
 }
-
+  
 addBtn.addEventListener('click', () => {
-  // hide & seek with the form
   addToy = !addToy
   if (addToy) {
     toyForm.style.display = 'block'
+    toyForm.addEventListener('submit', event => {
+      event.preventDefault()
+      postToy(event.target)
+    })
   } else {
     toyForm.style.display = 'none'
   }
 })
 
+})
 fetchToys.then(toys => toys.map(toy => fetchToys(toy)))
